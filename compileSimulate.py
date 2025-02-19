@@ -3,8 +3,8 @@ import subprocess
 import time
 import argparse
 import itertools
-import pygetwindow as gw
-import pyautogui
+# import pygetwindow as gw
+# import pyautogui
 
 # Configuration
 # GTKWAVE_PATH = r"C:\\sc\\work"  # Path to GTKWave executable directory
@@ -29,20 +29,12 @@ parser.add_argument(
     action="store_true",
     help="Show waveform at the end of the simulation",
 )
-parser.add_argument(
-    "--force",
-    action="store_true",
-    help="Forces to show waveform at the end of the simulation even with errors",
-)
 args = parser.parse_args()
 
 TOP_LEVEL_TB = args.top_level_tb  # Set the module name from command line argument
 SHOW_WAVEFORM = (
     args.show_waveform
 )  # Set the show waveform option from command line argument
-FORCE = (
-    args.force
-)  # Set the show force option from command line argument
 
 # Environment setup for GTKWave (add GTKWAVE_PATH to PATH)
 # os.environ["PATH"] += os.pathsep + GTKWAVE_PATH
@@ -100,7 +92,7 @@ if __name__ == "__main__":
     subprocess.run(compile_command, shell=True, check=True)
 
     # Step 3: Generate simulation do file with VCD commands if SHOW_WAVEFORM is True
-
+    # if SHOW_WAVEFORM:
     simulation_commands = [
         f"vcd file {VCD_FILE}",
         "vcd add -r /*",  # Recursive addition of all signals
@@ -108,7 +100,8 @@ if __name__ == "__main__":
         "vcd flush",
         "quit",
     ]
-
+    # else:
+    #     simulation_commands = ["run -all", "quit"]
     simulation_command_str = "; ".join(simulation_commands)
 
     # Step 4: Simulate the design with VCD generation
@@ -129,8 +122,7 @@ if __name__ == "__main__":
 
     if "Failed" in log_content:
         print(f"Simulation {RED}FAILED{RESET}. Not generating or displaying waveforms.")
-        if not FORCE:
-            exit(1)
+        exit(1)
     else:
         print(f"Simulation {GREEN}PASSED{RESET}. Proceeding to view waveforms.")
 
@@ -142,7 +134,7 @@ if __name__ == "__main__":
         # os.send_keys('{TAB}')
 
         # Simulate pressing the Tab key
-        pyautogui.press("tab")
+        # pyautogui.press("tab")
 
     elif SHOW_WAVEFORM:
         print(f"VCD file {VCD_FILE} not found. Cannot open GTKWave.")

@@ -23,4 +23,4 @@ shift
 goto parse_args
 
 :run_script
-python "C:\\scripts\\compileSimulate.py" %input% %show_waveform_flag% %force_flag%
+python "C:\\scripts\\CompileSimulate.py" %input% %show_waveform_flag% %force_flag%

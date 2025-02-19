@@ -73,8 +73,9 @@ def run_lint(top_module, show_gui=False, reload=False):
         sys.exit(1)
     
     # If GUI flag is set, launch the GUI
+    print(os.path.join(lint_dir, "lint.db"))
     if show_gui:
-        subprocess.run(["qverify", "-idegui", "lint.db"], check=True)
+        subprocess.run(["qverify", "-idegui", os.path.join(lint_dir, "lint.db")], check=True)
 
 if __name__ == "__main__":
     # Ensure at least one argument is provided

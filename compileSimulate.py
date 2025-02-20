@@ -28,11 +28,21 @@ parser.add_argument(
     action="store_true",
     help="Show waveform at the end of the simulation",
 )
+parser.add_argument(
+    "--force_flag",
+    action="store_true",
+    help="Force Show waveform at the end of the simulation with errors",
+)
+
 args = parser.parse_args()
 
 TOP_LEVEL_TB = args.top_level_tb  # Set the module name from command line argument
 SHOW_WAVEFORM = (
     args.show_waveform
+)  # Set the show waveform option from command line argument
+
+FORCE_WAVE = (
+    args.force_flag
 )  # Set the show waveform option from command line argument
 
 # Change to the simulation directory
@@ -143,7 +153,8 @@ if __name__ == "__main__":
 
     if "Failed" in log_content:
         print(f"Simulation {RED}FAILED{RESET}. Not generating or displaying waveforms.")
-        exit(1)
+        if not FORCE_WAVE:
+            exit(1)
     else:
         print(f"Simulation {GREEN}PASSED{RESET}. Proceeding to view waveforms.")
 

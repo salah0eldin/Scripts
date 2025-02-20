@@ -1,6 +1,8 @@
 import os
 import subprocess
 import sys
+import time
+# import psutil  # Add this import to check for running processes
 
 def run_lint(top_module, show_gui=False, reload=False):
     # Get current directory
@@ -75,7 +77,26 @@ def run_lint(top_module, show_gui=False, reload=False):
     # If GUI flag is set, launch the GUI
     print(os.path.join(lint_dir, "lint.db"))
     if show_gui:
+        time.sleep(1)
         subprocess.run(["qverify", "-idegui", os.path.join(lint_dir, "lint.db")], check=True)
+
+        # gui_opened = False
+        # while not gui_opened:
+        #     try:
+        #         subprocess.run(["qverify", "-idegui", os.path.join(lint_dir, "lint.db")], check=True)
+        #         time.sleep(10)  # Wait for the GUI to open
+        #         # Check if the GUI process is running
+        #         for proc in psutil.process_iter(['pid', 'name']):
+        #             print(proc.info['name'])
+        #             if proc.info['name'] == 'qverify.exe':  # Adjust the process name if needed
+        #                 print("GUI opened successfully.")
+        #                 gui_opened = True
+        #                 break
+        #         if not gui_opened:
+        #             print("GUI did not open, retrying...")
+        #     except subprocess.CalledProcessError:
+        #         print("Failed to open GUI, retrying...")
+        #         time.sleep(2)  # Wait before retrying
 
 if __name__ == "__main__":
     # Ensure at least one argument is provided

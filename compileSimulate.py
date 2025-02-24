@@ -56,33 +56,48 @@ def run_simulation_with_spinner(command, description):
 
     # Start the simulation process
     process = subprocess.Popen(
-        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        # command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
 
     # Spinner animation
-    spinner = itertools.cycle(["-", "\\", "|", "/"])
+    # spinner = itertools.cycle(["-", "\\", "|", "/"])
 
-    while process.poll() is None:  # While the process is running
-        print(f"\rSimulating... {next(spinner)}", end="", flush=True)
-        time.sleep(0.1)  # Update interval
+    # while process.poll() is None:  # While the process is running
+    #     print(f"\rSimulating... {next(spinner)}", end="", flush=True)
+    #     time.sleep(0.1)  # Update interval
 
     # Capture and display the output
-    stdout, stderr = process.communicate()
+    # stdout, stderr = process.communicate()
 
     # Color the "Passed" and "Failed" text in the simulation output
-    colored_output = stdout.replace("Passed", f"{GREEN}Passed{RESET}").replace(
-        "Failed", f"{RED}Failed{RESET}"
-    )
+    # colored_output = stdout.replace("Passed", f"{GREEN}Passed{RESET}").replace(
+    #     "Failed", f"{RED}Failed{RESET}"
+    # )
+    ret = ""
+    # Stream output in real-time
+    for line in iter(process.stdout.readline, ""):
+        line = line.replace("Passed", f"{GREEN}Passed{RESET}").replace(
+            "Failed", f"{RED}Failed{RESET}"
+        )
+        ret += line
+        print(line, end="")
+    
+    stdout, stderr = process.communicate()
+    process.stdout.close()
+    process.wait()
 
     print("\n\nSimulation Output:")
-    print(colored_output)  # Print the colored simulation output to the terminal
+    # print(colored_output)  # Print the colored simulation output to the terminal
 
     # Check for errors
     if process.returncode != 0:
         print(f"Error: {stderr}")
+        # print(f"Error: Simulation failed.")
         exit(1)
 
-    return stdout
+    return ret
+    # return "stdout"
 
 
 # Function to generate the simulation do file

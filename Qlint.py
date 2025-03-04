@@ -10,7 +10,7 @@ def run_lint(top_module, show_gui=False, reload=False):
     current_dir = current_dir.replace("\\", "/")  # Ensure forward slashes for compatibility
 
     # Create the lint directory if it doesn't exist
-    lint_dir = os.path.join(current_dir, "lint")
+    lint_dir = os.path.join(current_dir, "lint", top_module)
     lint_dir = lint_dir.replace("\\", "/")  # Ensure forward slashes for compatibility
     os.makedirs(lint_dir, exist_ok=True)
 

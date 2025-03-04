@@ -3,15 +3,6 @@ import subprocess
 import time
 import argparse
 
-# Configuration
-SIM_DIR = os.path.join(os.getcwd(), "sim")
-LOG_FILE = os.path.join(SIM_DIR, "simulation_log.txt")
-VCD_FILE = os.path.join(SIM_DIR, "simulation.vcd")
-SIM_DO_FILE = os.path.join(SIM_DIR, "simulate.do")
-
-# ANSI escape sequences for colored output
-RED, GREEN, RESET = "\033[31m", "\033[32m", "\033[0m"
-
 # Argument Parser
 parser = argparse.ArgumentParser(description="Run ModelSim simulation and view waveforms with GTKWave.")
 parser.add_argument("top_level_tb", help="Top-level testbench module name")
@@ -23,6 +14,15 @@ args = parser.parse_args()
 TOP_LEVEL_TB = args.top_level_tb
 SHOW_WAVEFORM = args.show_waveform
 FORCE_WAVE = args.force_flag
+
+# Configuration
+SIM_DIR = os.path.join(os.getcwd(), "sim", TOP_LEVEL_TB)
+LOG_FILE = os.path.join(SIM_DIR, "simulation_log.txt")
+VCD_FILE = os.path.join(SIM_DIR, "simulation.vcd")
+SIM_DO_FILE = os.path.join(SIM_DIR, "simulate.do")
+
+# ANSI escape sequences for colored output
+RED, GREEN, RESET = "\033[31m", "\033[32m", "\033[0m"
 
 # Ensure the simulation directory exists
 os.makedirs(SIM_DIR, exist_ok=True)

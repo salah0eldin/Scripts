@@ -62,7 +62,15 @@ def setup_simulation():
     if not os.path.exists("work"):
         run_command("vlib work", "Creating ModelSim work library")
 
-    run_command("vlog -work work +acc ../../*.v", "Compiling Verilog files")
+    # Check for .sv files
+    sv_files_exist = any(f.endswith('.sv') for f in os.listdir('../../'))
+
+    # Compile command
+    compile_command = "vlog -work work +acc ../../*.v"
+    if sv_files_exist:
+        compile_command += " ../../*.sv"
+
+    run_command(compile_command, "Compiling Verilog files")
 
 
 def run_simulation():

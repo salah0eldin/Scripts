@@ -31,6 +31,7 @@ os.chdir(SIM_DIR)
 
 def run_command(command, description, check=True):
     """Execute a shell command and stream output in real-time."""
+    print("Running command: {}".format(command))
     print(f"\n{description}...")
 
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
@@ -66,9 +67,9 @@ def setup_simulation():
     sv_files_exist = any(f.endswith('.sv') for f in os.listdir('../../'))
 
     # Compile command
-    compile_command = "vlog -work work +acc ../../*.v"
+    compile_command = "vlog -work work +acc \"../../*.v\""
     if sv_files_exist:
-        compile_command += " ../../*.sv"
+        compile_command += " \"../../*.sv\""
 
     run_command(compile_command, "Compiling Verilog files")
 
@@ -93,7 +94,7 @@ def run_simulation():
     ])
 
     # Run simulation
-    sim_output = run_command(f"vsim -c -do {SIM_DO_FILE} -l {LOG_FILE} work.{TOP_LEVEL_TB} -voptargs=+acc",
+    sim_output = run_command(f"vsim -c -voptargs=+acc -do \"{SIM_DO_FILE}\" -l \"{LOG_FILE}\" work.{TOP_LEVEL_TB}",
                              f"Simulating {TOP_LEVEL_TB}")
 
     # Count errors and check log file

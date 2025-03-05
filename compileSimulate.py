@@ -147,7 +147,7 @@ def generate_coverage_report():
         # run_command(f"vcover report -details -file {COVERAGE_REPORT_FILE} {UCDB_FILE}",
         #             "Generating coverage report")
         run_command(
-            f"vcover report -details -output coverage_report.txt coverage.ucdb",
+            f"vcover report -details -all -output coverage_report.txt coverage.ucdb",
             "Generating coverage report",
         )
         print(f"Coverage report generated: {COVERAGE_REPORT_FILE}")

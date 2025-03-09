@@ -6,16 +6,28 @@ set html_flag=
 
 rem Capture the first argument which is the name
 set input=%1
+if "%input%"=="" (
+    echo Error: Name is required.
+    exit /b 1
+)
+if "%input:~0,1%"=="-" (
+    echo Error: Name cannot start with "-".
+    exit /b 1
+)
 shift
 
 :parse_args
 if "%~1"=="" goto run_script
-if "%~1"=="-w" set show_waveform_flag=--show_waveform
-if "%~1"=="-f" set force_flag=--force
-if "%~1"=="-html" set html_flag=--html
-if not "%~1"=="-w" if not "%~1"=="-f" if not "%~1"=="-html"(
+if "%~1"=="-w" (
+    set show_waveform_flag=--show_waveform
+) else if "%~1"=="-f" (
+    set force_flag=--force
+) else if "%~1"=="-html" (
+    set html_flag=--html
+) else (
     echo Error: Unrecognized flag "%~1".
     echo Usage: CompileSimulate [name] [options]
+    echo Name:
     echo Options:
     echo   -w       Show waveform
     echo   -f       Force execution

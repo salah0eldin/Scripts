@@ -16,12 +16,18 @@ parser.add_argument(
     action="store_true",
     help="Force waveform display even if errors occur",
 )
+parser.add_argument(
+    "--html_flag",
+    action="store_true",
+    help="Generate HTML coverage report",
+)
 args = parser.parse_args()
 
 # Extract arguments
 TOP_LEVEL_TB = args.top_level_tb
 SHOW_WAVEFORM = args.show_waveform
 FORCE_WAVE = args.force_flag
+GENERATE_HTML = args.html_flag
 
 # Configuration
 SIM_DIR = os.path.join(os.getcwd(), "sim", TOP_LEVEL_TB)
@@ -88,7 +94,7 @@ def setup_simulation():
     sv_files_exist = any(f.endswith(".sv") for f in os.listdir("../../"))
 
     # Compile command with coverage options enabled (-cover bcesfx for branch, condition, expression, statement, and toggle coverage)
-    compile_command = 'vlog -work work +acc -cover bcesfx "../../*.v"'
+    compile_command = 'vlog -work work +acc +cover -covercells "../../*.v"'
     if sv_files_exist:
         compile_command += ' "../../*.sv"'
 
@@ -113,10 +119,10 @@ def run_simulation():
     # sim_output = run_command(f"vsim -c -voptargs=+acc -coverage -do \"{SIM_DO_FILE}\" -l \"{LOG_FILE}\" work.{TOP_LEVEL_TB}",
     #                          f"Simulating {TOP_LEVEL_TB}")
     sim_output = run_command(
-        f"vsim -c -voptargs=+acc -coverage -do simulate.do -l simulation_log.txt work.{TOP_LEVEL_TB}",
+        f"vsim -c -voptargs=+acc -cover -do simulate.do -l simulation_log.txt work.{TOP_LEVEL_TB}",
         f"Simulating {TOP_LEVEL_TB}",
     )
-    
+
     generate_do_file(
         FULL_DO_FILE,
         [
@@ -147,10 +153,18 @@ def generate_coverage_report():
         # run_command(f"vcover report -details -file {COVERAGE_REPORT_FILE} {UCDB_FILE}",
         #             "Generating coverage report")
         run_command(
-            f"vcover report -details -all -output coverage_report.txt coverage.ucdb",
+            f"vcover report coverage.ucdb -details -annotate -all -output coverage_report.txt",
             "Generating coverage report",
         )
         print(f"Coverage report generated: {COVERAGE_REPORT_FILE}")
+        if GENERATE_HTML:
+            print("\nGenerating HTML coverage report...")
+            # Generate an HTML coverage report
+            run_command(
+                f"vcover report -html -output coverage_report.html {UCDB_FILE}",
+                "Generating HTML coverage report",
+            )
+            print("Coverage report generated: coverage_report.html")
     else:
         print(
             f"{RED}Error: UCDB file not found.{RESET} Cannot generate coverage report."

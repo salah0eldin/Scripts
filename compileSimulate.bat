@@ -1,10 +1,11 @@
 @echo off
+setlocal EnableDelayedExpansion
 
 set show_waveform_flag=
 set force_flag=
 set html_flag=
-set seed_flag=-sv_seed random
-
+set seed_flag=--sv_seed random
+set seed_value=random
 
 rem Capture the first argument which is the name
 set input=%1
@@ -20,32 +21,37 @@ shift
 
 :parse_args
 if "%~1"=="" goto run_script
-if "%~1"=="-w" (
+if "%~1%"=="-w" (
     set show_waveform_flag=--show_waveform
-) else if "%~1"=="-f" (
+) else if "%~1%"=="-f" (
     set force_flag=--force
-) else if "%~1"=="-html" (
+) else if "%~1%"=="-html" (
     set html_flag=--html
-) else if "%~1"=="-seed" (
+) else if "%~1%"=="-seed" (
     shift
-    if "%~1"=="" (
+    set seed_value=%2
+    if "!seed_value!"=="" (
         echo Error: -seed option requires a value.
         exit /b 1
     )
-    set seed_flag=-sv_seed %~1
+    if "!seed_value:~0,1!"=="-" (
+        echo Error: -seed option requires a value.
+        exit /b 1
+    )
+    set seed_flag=--sv_seed !seed_value!
 ) else (
-    echo Error: Unrecognized flag "%~1".
+    echo Error: Unrecognized flag "%~1%".
     echo Usage: CompileSimulate [name] [options]
     echo Name:
     echo Options:
     echo   -w           Show waveform
     echo   -f           Force execution
     echo   -html        Generate HTML coverage
-    echo   -seed [val]  Set seed with static number (default: random)
+    echo   -seed [val]  Set seed with static number, default: random
     exit /b 1
 )
 shift
 goto parse_args
 
 :run_script
-python "C:\\scripts\\CompileSimulate.py" %input% %show_waveform_flag% %force_flag% %html_flag% %seed_flag%
+python "C:\\scripts\\CompileSimulate.py" %input% %show_waveform_flag% %force_flag% %html_flag% !seed_flag!

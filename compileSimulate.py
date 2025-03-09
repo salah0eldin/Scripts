@@ -23,7 +23,8 @@ parser.add_argument(
 )
 parser.add_argument(
     "--sv_seed",
-    action="store_true",
+    type=str,
+    default="0",
     help="Seeding for SystemVerilog simulation",
 )
 args = parser.parse_args()
@@ -35,7 +36,7 @@ SHOW_WAVEFORM = args.show_waveform
 FORCE_WAVE = args.force_flag
 GENERATE_HTML = args.html_flag
 SV_SEED = args.sv_seed
-
+print(SV_SEED)
 # Configuration
 SIM_DIR = os.path.join(os.getcwd(), "sim", TOP_LEVEL_TB)
 LOG_FILE = os.path.join(SIM_DIR, "simulation_log.txt")

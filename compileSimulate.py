@@ -21,13 +21,20 @@ parser.add_argument(
     action="store_true",
     help="Generate HTML coverage report",
 )
+parser.add_argument(
+    "--sv_seed",
+    action="store_true",
+    help="Seeding for SystemVerilog simulation",
+)
 args = parser.parse_args()
 
 # Extract arguments
 TOP_LEVEL_TB = args.top_level_tb
+TOP_LEVEL = "_".join(TOP_LEVEL_TB.split("_")[:-1])
 SHOW_WAVEFORM = args.show_waveform
 FORCE_WAVE = args.force_flag
 GENERATE_HTML = args.html_flag
+SV_SEED = args.sv_seed
 
 # Configuration
 SIM_DIR = os.path.join(os.getcwd(), "sim", TOP_LEVEL_TB)
@@ -94,9 +101,9 @@ def setup_simulation():
     sv_files_exist = any(f.endswith(".sv") for f in os.listdir("../../"))
 
     # Compile command with coverage options enabled (-cover bcesfx for branch, condition, expression, statement, and toggle coverage)
-    compile_command = 'vlog -work work +acc +cover -covercells "../../*.v"'
+    compile_command = 'vlog -work work +acc +cover -covercells ../../*.v'
     if sv_files_exist:
-        compile_command += ' "../../*.sv"'
+        compile_command += ' ../../*.sv'
 
     run_command(compile_command, "Compiling Verilog files")
 
@@ -110,7 +117,7 @@ def run_simulation():
             "vcd file simulation.vcd",
             "vcd add -r /*",
             "run -all",
-            "coverage save -onexit coverage.ucdb",
+            f"coverage save -onexit coverage.ucdb -du work.{TOP_LEVEL}",
             "quit",
         ],
     )
@@ -119,7 +126,7 @@ def run_simulation():
     # sim_output = run_command(f"vsim -c -voptargs=+acc -coverage -do \"{SIM_DO_FILE}\" -l \"{LOG_FILE}\" work.{TOP_LEVEL_TB}",
     #                          f"Simulating {TOP_LEVEL_TB}")
     sim_output = run_command(
-        f"vsim -c -voptargs=+acc -cover -do simulate.do -l simulation_log.txt work.{TOP_LEVEL_TB}",
+        f"vsim -c -voptargs=+acc -cover -sv_seed {SV_SEED} -do simulate.do -l simulation_log.txt work.{TOP_LEVEL_TB}",
         f"Simulating {TOP_LEVEL_TB}",
     )
 
@@ -129,7 +136,7 @@ def run_simulation():
             "vcd file simulation.vcd",
             "vcd add -r /*",
             "run -all",
-            "coverage save -onexit coverage.ucdb",
+            f"coverage save -onexit coverage.ucdb -du work.{TOP_LEVEL}",
             "quit -sim",
         ],
     )
